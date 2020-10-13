@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class UserEntity {
@@ -10,6 +19,22 @@ export class UserEntity {
   name: string;
 
   @Column({ unique: true })
-  username: string;
+  email: string
 
+  @Column({ select: true })
+  password: string
+
+  @BeforeInsert()
+  emailToLowerCase() {
+    this.email = this.email.toLowerCase()
+  }
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updateAt: Date
+
+  @DeleteDateColumn()
+  deletedAt: Date
 }
