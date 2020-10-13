@@ -9,6 +9,7 @@ async function bootstrap() {
     .setDescription('Blog api with user authentication')
     .setVersion('1.0')
     .addTag('gpcoders blog')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
