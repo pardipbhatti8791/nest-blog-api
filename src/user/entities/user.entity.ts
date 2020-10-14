@@ -7,7 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { UserRole } from '../interface/user.interface';
+
+
 
 @Entity()
 export class UserEntity {
@@ -28,6 +30,9 @@ export class UserEntity {
   emailToLowerCase() {
     this.email = this.email.toLowerCase()
   }
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole
 
   @CreateDateColumn()
   createdAt: Date

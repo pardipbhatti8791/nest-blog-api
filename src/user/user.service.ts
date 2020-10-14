@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -56,7 +57,10 @@ export class UserService {
           .pipe(map((jwt: string) => jwt));
       }),
       catchError(e => {
-        throw new UnauthorizedException();
+        throw new HttpException(
+          'Entered email or password is not valid',
+          HttpStatus.UNAUTHORIZED,
+        );
       }),
     );
   }
@@ -84,11 +88,15 @@ export class UserService {
   }
 
   findByEmail(email: string): Observable<UserInterface> {
-    return from(this.userRepository.findOne({ email }))
+    return from(this.userRepository.findOne({ email }));
   }
 
   findAll(): Observable<UserInterface[]> {
-    return from(this.userRepository.find());
+    return from(
+      this.userRepository.find({
+        select: ['name', 'email', 'role', 'createdAt', 'updateAt', 'deletedAt', 'id'],
+      }),
+    );
   }
 
   deleteOne(id: number): Observable<any> {
@@ -96,10 +104,26 @@ export class UserService {
   }
 
   updateOne(id: number, user: UserDto): Observable<any> {
-    return from(this.userRepository.update(id, user));
+    return this.authService.hashPassword(user.password).pipe(
+      switchMap((passwordHash: string) => {
+        user.password = passwordHash;
+        return from(this.userRepository.update(id, user));
+      }),
+      catchError(e => {
+        if (e.code && e.code === '23505') {
+          throw new ConflictException(e.message);
+        } else {
+          throw new BadRequestException();
+        }
+      }),
+    );
   }
 
   findOne(id: number): Observable<UserInterface> {
-    return from(this.userRepository.findOne(id));
+    return from(
+      this.userRepository.findOne(id, {
+        select: ['name', 'email', 'createdAt', 'role', 'updateAt', 'deletedAt'],
+      }),
+    );
   }
 }

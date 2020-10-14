@@ -1,5 +1,6 @@
 import { IsEmail, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '../interface/user.interface';
 
 export class UserDto {
   @ApiProperty({ description: 'name field is required' })
@@ -12,5 +13,9 @@ export class UserDto {
 
   @ApiProperty({ description: 'password is required' })
   @IsString()
-  readonly password: string
+  password: string
+
+  @ApiProperty({ description: 'roles is required' })
+  @IsString()
+  readonly role: UserRole
 }

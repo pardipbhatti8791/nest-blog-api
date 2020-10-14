@@ -23,7 +23,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
-  app.useGlobalFilters(new HttpExceptionFilter())
+  // app.useGlobalFilters(new HttpExceptionFilter())
   await app.listen(3000);
 }
 bootstrap();
